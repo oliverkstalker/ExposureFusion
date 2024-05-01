@@ -86,9 +86,9 @@ def calculate_weight_map(image, wc=1.0, ws=1.0, we=1.0):
     weight_map = (contrast ** wc) * (saturation ** ws) * (well_exposedness ** we)
     
     # It's common to normalize the weight map to prevent numerical instability
-    # weight_map += 1e-12  # Prevent division by zero
+    weight_map += 1e-12  # Prevent division by zero
     
-    weight_sum = np.sum(weight_map, axis=(0, 1), keepdims=True)
+    weight_sum = np.sum(weight_map, axis=(0, 1), keepdims=True) + 1e-12
     weight_map /= weight_sum
 
     return weight_map

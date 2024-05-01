@@ -26,7 +26,10 @@ def calculate_quality_measures(image):
     
     # Calculate well-exposedness using a Gaussian curve centered at 0.5
     sigma = 0.2
-    well_exposedness = np.exp(-0.5 * ((gray - 0.5) ** 2) / sigma**2)
+    well_exposedness = np.ones(image.shape[:2], dtype=np.float32)  # Initialize to ones
+    for channel in range(3):  # Assuming BGR format
+        channel_data = image[:, :, channel]
+        well_exposedness *= np.exp(-0.5 * ((channel_data - 0.5) ** 2) / sigma**2)
     
     return contrast, saturation, well_exposedness
 

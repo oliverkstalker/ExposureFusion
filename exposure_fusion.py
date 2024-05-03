@@ -63,6 +63,6 @@ def exposure_fusion(directory, scene_name):
     plt.show()
 
 if __name__ == '__main__':
-    scene_name = 'Cave' 
+    scene_name = 'Venice' 
     directory = f'Images/{scene_name}'  
     exposure_fusion(directory, scene_name)

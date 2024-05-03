@@ -18,19 +18,24 @@ def calculate_quality_measures(image):
     
     # Calculate contrast using the Laplacian operator
     laplacian = cv2.Laplacian(gray, cv2.CV_32F)
-    contrast = np.abs(laplacian)
+    contrast = np.abs(laplacian) + 1.0
     
     # Calculate saturation as the standard deviation of color channels
     mean = np.mean(image, axis=2)
-    saturation = np.sqrt(((image - mean[:, :, np.newaxis])**2).mean(axis=2))
+    saturation = np.sqrt(((image - mean[:, :, np.newaxis])**2).mean(axis=2)) + 1.0
     
     # Calculate well-exposedness using a Gaussian curve centered at 0.5
-    sigma = 0.2
+    sigma = 0.4
     well_exposedness = np.ones(image.shape[:2], dtype=np.float32)  # Initialize to ones
     for channel in range(3):  # Assuming BGR format
         channel_data = image[:, :, channel]
         well_exposedness *= np.exp(-0.5 * ((channel_data - 0.5) ** 2) / sigma**2)
     
+    # Apply Gaussian blur to reduce halo effects
+    contrast = cv2.GaussianBlur(contrast, (5, 5), 0)
+    saturation = cv2.GaussianBlur(saturation, (5, 5), 0)
+    well_exposedness = cv2.GaussianBlur(well_exposedness, (5, 5), 0)
+
     return contrast, saturation, well_exposedness
 
 def display_heatmaps(image, contrast, saturation, well_exposedness):
@@ -87,10 +92,9 @@ def calculate_weight_map(image, wc=1.0, ws=1.0, we=1.0):
     
     # Compute the weight map using the given exponents
     weight_map = (contrast ** wc) * (saturation ** ws) * (well_exposedness ** we)
-    
-    # It's common to normalize the weight map to prevent numerical instability
+
+    # Normalize the weight map
     weight_map += 1e-12  # Prevent division by zero
-    
     weight_sum = np.sum(weight_map, axis=(0, 1), keepdims=True) + 1e-12
     weight_map /= weight_sum
 

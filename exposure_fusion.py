@@ -46,8 +46,8 @@ def collapse_pyramid(pyramid):
 
 def exposure_fusion(directory, scene_name):
     images = load_images_from_directory(directory)
-    weight_maps = [calculate_weight_map(img, 0.5, 2.0, 0.7) for img in images]
-    max_level = 6
+    weight_maps = [calculate_weight_map(img, 1.0, 1.0, 1.0) for img in images]
+    max_level = 25
 
     l_pyramids = [build_pyramid(img, max_level, 'laplacian') for img in images]
     g_pyramids = [build_pyramid(w_map, max_level, 'gaussian') for w_map in weight_maps]
@@ -63,6 +63,6 @@ def exposure_fusion(directory, scene_name):
     plt.show()
 
 if __name__ == '__main__':
-    scene_name = 'Venice' 
+    scene_name = 'kluki' 
     directory = f'Images/{scene_name}'  
     exposure_fusion(directory, scene_name)
